@@ -1,4 +1,5 @@
 var createError = require('http-errors');
+var compression = require('compression')
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -8,6 +9,8 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
+//gizp
+app.use(compression());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
