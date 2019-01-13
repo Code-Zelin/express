@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    <script>
+        $.post('http://web-shen.club/wxJssdk/getJssdk', {
+            url: location.href
+        }, (res) => {
+            console.log(res);
+            wx.config({
+                debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                appId: res.data.appId, // 必填，公众号的唯一标识
+                timestamp: res.data.timestamp, // 必填，生成签名的时间戳
+                nonceStr: res.data.nonceStr, // 必填，生成签名的随机串
+                signature: res.data.signature, // 必填，签名
+                jsApiList: ['updateAppMessageShareData', 'updateTimelineShareData'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+            });
+        })
+        wx.ready(function () { //需在用户可能点击分享按钮前就先调用
+            wx.updateAppMessageShareData({
+                title: '啦啦啦', // 分享标题
+                desc: '我是卖报的小行家', // 分享描述
+                link: location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                imgUrl: 'https://gss3.bdstatic.com/-Po3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=9afd59b7cc5c1038247ec9c48a2af42e/0eb30f2442a7d933bb38bddea74bd11372f0018e.jpg', // 分享图标
+                success: function () {
+                    // 设置成功
+                    console.log(111);
+                }
+            });
+            wx.updateTimelineShareData({
+                title: '哈哈哈', // 分享标题
+                link: location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                imgUrl: 'https://gss3.bdstatic.com/-Po3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=9afd59b7cc5c1038247ec9c48a2af42e/0eb30f2442a7d933bb38bddea74bd11372f0018e.jpg', // 分享图标
+                success: function () {
+                    // 设置成功
+                    console.log(2222);
+                }
+            })
+        })
+    </script>
+</body>
+
+</html>
