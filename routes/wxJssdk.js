@@ -1,5 +1,6 @@
 var express = require('express');
 var sha1 = require('sha1');
+var jsSHA = require('jssha');
 var router = express.Router();
 
 const request = require('request')
@@ -9,6 +10,31 @@ const cache = new NodeCache({
     stdTTL: 3600,
     checkperiod: 3600
 }) //3600秒后过过期
+
+var createNonceStr = function () {
+    return Math.random().toString(36).substr(2, 15);
+};
+
+var createTimestamp = function () {
+    return parseInt(new Date().getTime() / 1000) + '';
+};
+
+var raw = function (args) {
+    var keys = Object.keys(args);
+    keys = keys.sort()
+    var newArgs = {};
+    keys.forEach(function (key) {
+        newArgs[key.toLowerCase()] = args[key];
+    });
+
+    var string = '';
+    for (var k in newArgs) {
+        string += '&' + k + '=' + newArgs[k];
+    }
+    string = string.substr(1);
+    return string;
+};
+
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -36,8 +62,8 @@ router.get('/', function (req, res, next) {
 router.post('/getJssdk', (req, res) => {
 
     const grant_type = 'client_credential'
-    const appid = 'wxc8c7374f6e5c78a5'
-    const secret = '8f97892c143677c87a94ab72250e98bb'
+    const appid = 'wx209131d6596b95ba'
+    const secret = '42b0356cfcde1ffa7419c30c99b6bb9b'
 
     let steps = []
 
@@ -139,12 +165,16 @@ router.post('/getJssdk', (req, res) => {
     // 第三步，生成签名
     steps.push((ticket, cb) => {
         let jsapi_ticket = ticket
-        let nonce_str = '4eHjBlJaPlNYW6hv0q7VKyM8Piw7Iboho95MV1YchBZ'
-        let timestamp = new Date().getTime()
-        let url = req.query.url
+        // let nonce_str = '4eHjBlJaPlNYW6hv0q7VKyM8Piw7Iboho95MV1YchBZ'
 
-        let str = 'jsapi_ticket=' + jsapi_ticket + '&noncestr=' + nonce_str + '×tamp=' + timestamp + '&url=' + url
-        let signature = sha1(str)
+        let nonce_str = createNonceStr();
+        let timestamp = createTimestamp();
+        let url = req.body.url;
+
+        let str = 'jsapi_ticket=' + jsapi_ticket + '&noncestr=' + nonce_str + '&timestamp=' + timestamp + '&url=' + url
+        console.log(url, str);
+        let shaObj = new jsSHA(str, 'TEXT');
+        let signature = shaObj.getHash('SHA-1', 'HEX');
 
         cb(null, {
             appId: appid,
