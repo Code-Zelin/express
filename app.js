@@ -5,9 +5,11 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
+var mysqlRouter = require('./routes/mysql');
 var usersRouter = require('./routes/users');
 var wxRouter = require('./routes/wxJssdk');
+var miniRouter = require('./routes/miniProgram');
+var bodyParser = require('body-parser');
 
 var router = express.Router();
 var app = express();
@@ -32,15 +34,19 @@ router.get('/**', function(req, res) {
   res.type('html');
 })
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
+app.use('/mysql', mysqlRouter);
 // app.use('/users', usersRouter);
 app.use('/wxJssdk', wxRouter);
+app.use('/miniProgram', miniRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
